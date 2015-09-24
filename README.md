@@ -26,6 +26,7 @@ when './cgi' file changed, and recive a new request, './cgi' will be reload.
 
 # note
 live-require module must be disposable .
+
 example, this will not work:
 ```js
 router.get('/cgi', live('./cgi'));
