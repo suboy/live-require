@@ -5,24 +5,25 @@ var global = this;
 var map = {};
 
 module.exports = function(p){
-	p = p.indexOf('/')<0?p:path.join(process.cwd(),p);
-	if(pickFileTime(p)){
-		//console.log(require.cache[p]);
-		delete require.cache[p];
+	var modulePath = require.resolve(p);
+	//console.log(modulePath)
+	if(needReload(modulePath)){
+		console.log('load: '+modulePath);
+		delete require.cache[modulePath];
 	}
 	return require.apply(global, [p]);
 }
 
-function pickFileTime(p){
-	if(!fs.existsSync(p)){
-		console.log('no exists: '+p)
+function needReload(modulePath){
+	if(!fs.existsSync(modulePath)){
+		console.log('no module file: '+modulePath)
 		return false;
 	}
-	var stat = fs.statSync(p);
-	var lastTime = map[p]||0;
+	var stat = fs.statSync(modulePath);
+	var lastTime = map[modulePath]||0;
 	var modifyTime = stat.mtime.getTime();
 	if(stat&&lastTime!=modifyTime){
-		map[p] = modifyTime;
+		map[modulePath] = modifyTime;
 		//console.log(modifyTime);
 		return true;
 	}else{
